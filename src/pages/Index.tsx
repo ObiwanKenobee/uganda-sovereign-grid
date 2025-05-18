@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthScreen from '@/components/auth/AuthScreen';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
@@ -11,11 +11,20 @@ import Finance from '@/components/modules/Finance';
 import CivicCore from '@/components/modules/CivicCore';
 import LandingPage from './LandingPage';
 import { Routes, Route } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 
 const Index = () => {
   const [authenticated, setAuthenticated] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
   const navigate = useNavigate();
+  
+  // Check if user is on a specific route
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (authenticated && path === '/') {
+      navigate('/dashboard');
+    }
+  }, [authenticated, navigate]);
   
   const handleLogin = () => {
     setAuthenticated(true);
@@ -33,7 +42,28 @@ const Index = () => {
   
   if (!authenticated) {
     if (showLanding) {
-      return <LandingPage onGetStarted={handleGetStarted} />;
+      return (
+        <>
+          <Helmet>
+            <script type="application/ld+json">
+              {JSON.stringify({
+                '@context': 'https://schema.org',
+                '@type': 'Organization',
+                'name': 'Uganda Sovereign Tech Grid',
+                'url': 'https://ustg.ug',
+                'logo': 'https://ustg.ug/logo.png',
+                'sameAs': [
+                  'https://twitter.com/USTG_Uganda',
+                  'https://facebook.com/USTGUganda',
+                  'https://linkedin.com/company/uganda-sovereign-tech-grid'
+                ],
+                'description': 'A secure, extensible, offline-capable platform for sovereign tech infrastructure, empowering Ugandan citizens with digital services.'
+              })}
+            </script>
+          </Helmet>
+          <LandingPage onGetStarted={handleGetStarted} />
+        </>
+      );
     }
     return <AuthScreen onAuth={handleLogin} />;
   }
