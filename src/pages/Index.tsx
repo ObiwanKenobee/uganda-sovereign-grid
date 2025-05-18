@@ -9,10 +9,12 @@ import AgroGrid from '@/components/modules/AgroGrid';
 import HealthPods from '@/components/modules/HealthPods';
 import Finance from '@/components/modules/Finance';
 import CivicCore from '@/components/modules/CivicCore';
+import LandingPage from './LandingPage';
 import { Routes, Route } from 'react-router-dom';
 
 const Index = () => {
   const [authenticated, setAuthenticated] = useState(false);
+  const [showLanding, setShowLanding] = useState(true);
   const navigate = useNavigate();
   
   const handleLogin = () => {
@@ -24,8 +26,15 @@ const Index = () => {
     setAuthenticated(false);
     navigate('/');
   };
+
+  const handleGetStarted = () => {
+    setShowLanding(false);
+  };
   
   if (!authenticated) {
+    if (showLanding) {
+      return <LandingPage onGetStarted={handleGetStarted} />;
+    }
     return <AuthScreen onAuth={handleLogin} />;
   }
   
